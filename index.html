@@ -1,0 +1,912 @@
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XuKrost Script</title>
+    <meta name="description" content="Free & VIP Roblox scripts — fast, clean, and updated">
+    <meta property="og:title" content="Get Scripts & Keys">
+    <meta property="og:description" content="Free & VIP Roblox scripts — fast, clean, and updated">
+    <meta property="og:type" content="website">
+    
+    <!-- Preload critical resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        rose: {
+                            400: '#fb7185',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            700: '#be123c',
+                        }
+                    },
+                    fontFamily: {
+                        'code-script': ['"Code Script"', 'cursive', 'Source Code Pro'],
+                        'sans': ['Poppins', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;700&family=Poppins:wght@400;700&family=Clicker+Script&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Custom styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+            min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        .brand-font {
+            font-family: 'Code Script', cursive;
+        }
+        
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .toast.error {
+            background: rgba(225, 29, 72, 0.3);
+            border: 1px solid rgba(225, 29, 72, 0.2);
+        }
+        
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.3;
+            z-index: -1;
+        }
+        
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Hamburger menu */
+        .hamburger {
+            cursor: pointer;
+            width: 24px;
+            height: 24px;
+            position: relative;
+        }
+        
+        .hamburger-top,
+        .hamburger-middle,
+        .hamburger-bottom {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 24px;
+            height: 2px;
+            background: white;
+            transform: rotate(0);
+            transition: all 0.5s;
+        }
+        
+        .hamburger-middle {
+            transform: translateY(7px);
+        }
+        
+        .hamburger-bottom {
+            transform: translateY(14px);
+        }
+        
+        .open .hamburger-top {
+            transform: rotate(45deg) translateY(6px) translateX(6px);
+        }
+        
+        .open .hamburger-middle {
+            display: none;
+        }
+        
+        .open .hamburger-bottom {
+            transform: rotate(-45deg) translateY(6px) translateX(-6px);
+        }
+        
+        /* Tambahan style untuk modal VIP */
+        .vip-modal-content {
+            background: rgba(17, 24, 39, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
+            max-width: 500px;
+            width: 90%;
+            padding: 25px;
+        }
+        
+        /* Loading animation for buttons */
+        .btn-loading {
+            position: relative;
+            color: transparent !important;
+        }
+        
+        .btn-loading::after {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+            border: 2px solid transparent;
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: button-loading-spinner 1s ease infinite;
+        }
+        
+        @keyframes button-loading-spinner {
+            from {
+                transform: rotate(0turn);
+            }
+            to {
+                transform: rotate(1turn);
+            }
+        }
+        
+        /* Improved mobile styles */
+        @media (max-width: 768px) {
+            .glass {
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+            }
+            
+            .hero-stats {
+                grid-template-columns: 1fr !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="fixed inset-0 bg-gradient-to-br from-gray-900 to-rose-900/70 flex items-center justify-center z-50 transition-opacity duration-700">
+        <div class="text-center">
+            <h1 class="brand-font text-5xl md:text-7xl text-white mb-4">XuKrost</h1>
+            <div class="w-16 h-16 border-t-4 border-rose-400 border-solid rounded-full animate-spin mx-auto"></div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <span class="text-white"></span>
+    </div>
+
+    <!-- Background Blobs -->
+    <div class="blob bg-rose-400 w-80 h-80 top-20 left-10"></div>
+    <div class="blob bg-rose-600 w-96 h-96 bottom-20 right-10"></div>
+
+    <!-- Navbar -->
+    <nav class="glass sticky top-0 z-40 rounded-none md:rounded-b-2xl py-4 px-6 md:px-8 mx-auto">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="#" class="brand-font text-2xl md:text-3xl text-white">XuKrost</a>
+            
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex space-x-6 items-center">
+                <a href="#scripts" class="hover:text-rose-300 transition">Scripts</a>
+                <a href="#partners" class="hover:text-rose-300 transition">Partners</a>
+                <a href="#socials" class="hover:text-rose-300 transition">Socials</a>
+                <a href="#faq" class="hover:text-rose-300 transition">FAQ</a>
+            </div>
+            
+            <!-- Mobile Menu Button -->
+            <div class="md:hidden">
+                <button id="menu-btn" class="hamburger" aria-label="Toggle menu">
+                    <span class="hamburger-top"></span>
+                    <span class="hamburger-middle"></span>
+                    <span class="hamburger-bottom"></span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="menu" class="glass hidden fixed left-6 right-6 top-24 rounded-2xl shadow-2xl py-6 px-4">
+            <div class="flex flex-col space-y-4">
+                <a href="#scripts" class="hover:text-rose-300 transition text-center py-2">Scripts</a>
+                <a href="#partners" class="hover:text-rose-300 transition text-center py-2">Partners</a>
+                <a href="#socials" class="hover:text-rose-300 transition text-center py-2">Socials</a>
+                <a href="#faq" class="hover:text-rose-300 transition text-center py-2">FAQ</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 md:px-8 py-12">
+        <!-- Hero Section -->
+        <section class="glass rounded-3xl p-8 md:p-12 mb-16 relative overflow-hidden">
+            <div class="absolute -inset-24 blur-3xl opacity-30 bg-rose-500 rounded-full"></div>
+            <div class="relative z-10">
+                <h1 class="text-4xl md:text-6xl font-bold text-center mb-6">Get Scripts & Key</h1>
+                <p class="text-xl md:text-2xl text-center text-gray-200 mb-10">Free & VIP Roblox scripts — fast, clean, and updated</p>
+                <div class="flex flex-col md:flex-row justify-center gap-4 mb-12">
+                    <a href="#scripts" class="glass px-8 py-4 rounded-2xl text-center hover:ring-2 hover:ring-rose-500/30 hover:scale-105 transition-transform duration-300">
+                        Get Scripts
+                    </a>
+                    <a href="#socials" class="bg-rose-500 px-8 py-4 rounded-2xl text-center hover:bg-rose-600 hover:scale-105 transition-all duration-300">
+                        Join Discord
+                    </a>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 hero-stats">
+                    <div class="glass rounded-2xl p-6 text-center hover:ring-2 hover:ring-rose-500/30 transition">
+                        <h3 class="text-2xl font-bold mb-2">Total Scripts</h3>
+                        <p class="text-4xl text-rose-400 font-bold">9</p>
+                    </div>
+                    <div class="glass rounded-2xl p-6 text-center hover:ring-2 hover:ring-rose-500/30 transition">
+                        <h3 class="text-2xl font-bold mb-2">Last Update</h3>
+                        <p class="text-xl" id="current-date"></p>
+                    </div>
+                    <div class="glass rounded-2xl p-6 text-center hover:ring-2 hover:ring-rose-500/30 transition">
+                        <h3 class="text-2xl font-bold mb-2">Community</h3>
+                        <p class="text-xl">760+ Users</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scripts Section -->
+        <section id="scripts" class="mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12">Available Scripts</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Script cards will be inserted here by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Partners Section -->
+        <section id="partners" class="glass rounded-3xl p-8 mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12">Our Partners</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 partners-container">
+                <!-- Partner cards will be inserted here by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Socials Section -->
+        <section id="socials" class="glass rounded-3xl p-8 mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12">Social Links</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Social cards will be inserted here by JavaScript -->
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section id="faq" class="mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12">Frequently Asked Questions</h2>
+            
+            <div class="glass rounded-3xl p-6">
+                <!-- FAQ items will be inserted here by JavaScript -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="glass rounded-t-3xl md:rounded-t-2xl py-8 px-6 text-center">
+        <p class="text-sm">© <span id="current-year"></span> Noirexe. All rights reserved.</p>
+    </footer>
+
+    <!-- Keys Modal -->
+    <div id="keys-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+        <div class="glass rounded-3xl p-6 m-4 max-w-md w-full">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold" id="modal-title">Script Keys</h3>
+                <button id="close-modal" class="text-2xl hover:text-rose-400 transition" aria-label="Close modal">&times;</button>
+            </div>
+            <div id="keys-container" class="mb-6 max-h-64 overflow-y-auto">
+                <!-- Keys will be inserted here -->
+            </div>
+            <button id="copy-all-keys" class="w-full bg-rose-500 py-3 rounded-2xl hover:bg-rose-600 transition">
+                Copy All Keys
+            </button>
+        </div>
+    </div>
+
+    <!-- VIP Modal -->
+    <div id="vip-modal" class="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50 hidden">
+        <div class="vip-modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold" id="vip-modal-title">VIP Access</h3>
+                <button id="close-vip-modal" class="text-2xl hover:text-rose-400 transition" aria-label="Close modal">&times;</button>
+            </div>
+            <div class="mb-6">
+                <p class="mb-4">Untuk mendapatkan akses VIP ke script <span id="vip-script-name" class="font-bold text-rose-400"></span>, silakan hubungi admin kami melalui Instagram.</p>
+                <p class="mb-4">Kami akan merespons dalam waktu 24 jam dengan informasi pembayaran dan akses.</p>
+                <div class="flex items-center glass p-4 rounded-xl mb-4">
+                    <i class="fab fa-instagram text-2xl text-pink-500 mr-3"></i>
+                    <div>
+                        <p class="font-bold">@snn2ndd_</p>
+                        <p class="text-sm text-gray-300">Admin Noirexe</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-col gap-3">
+                <button id="open-instagram-app" class="bg-gradient-to-r from-pink-500 to-purple-600 py-3 rounded-2xl hover:from-pink-600 hover:to-purple-700 transition flex items-center justify-center gap-2">
+                    <i class="fab fa-instagram"></i> Buka Instagram App
+                </button>
+                <button id="open-instagram-web" class="glass py-3 rounded-2xl hover:ring-2 hover:ring-rose-500/30 transition flex items-center justify-center gap-2">
+                    <i class="fas fa-external-link-alt"></i> Buka Instagram Web
+                </button>
+                <button id="copy-instagram-username" class="glass py-3 rounded-2xl hover:ring-2 hover:ring-rose-500/30 transition flex items-center justify-center gap-2">
+                    <i class="fas fa-copy"></i> Salin Username
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data for scripts
+        const scriptsData = [
+            {
+                title: "Script All Mount",
+                downloadUrl: 'https://safefileku.com/download/p3CXPyJi2HZtPjUZ',
+                keys: ["ig: @snn2ndd_"],
+                status: "Free"
+            }, 
+            {
+                title: "Script Fly",
+                downloadUrl: 'https://safefileku.com/download/w31ke8zlkUdfJupn',
+                keys: ["No Key, Jangan Dijual!"],
+                status: "Free"
+            }, 
+            {
+                title: "UPGRADE VIP SCRIPT",
+                downloadUrl: '',
+                keys: ["No Key"],
+                status: "VIP"
+            },
+        ];
+
+        // Data for partners
+        const partnersData = [
+            {
+                name: "giftmoree",
+                username: "@agngwjyaa26__",
+                url: "https://www.instagram.com/agngwjyaa26__/profilecard/?igsh=dnE4dTh0N3J3eDU1",
+                icon: "fab fa-instagram"
+            },
+            {
+                name: "Natsyn.",
+                username: "@env.example",
+                url: "https://instagram.com/env.example",
+                icon: "fab fa-instagram"
+            }
+        ];
+
+        // Data for socials
+        const socialsData = [
+            {
+                name: "Discord",
+                url: "https://discord.gg/RpYcMdzzwd",
+                icon: "fab fa-discord"
+            },
+            {
+                name: "YouTube",
+                url: "https://youtube.com/@noire-xe?si=5o4AvEjsX4Gn__uw",
+                icon: "fab fa-youtube"
+            },
+            {
+                name: "Instagram",
+                url: "https://www.instagram.com/snn2ndd_?igsh=czVyZzYxcmI0NW9l",
+                icon: "fab fa-instagram"
+            }
+        ];
+
+        // Data for FAQ
+        const faqData = [
+            {
+                question: "Cara pakai script?",
+                answer: "Download script, buka executor Roblox, paste script, execute. Pastikan game sudah terbuka."
+            },
+            {
+                question: "Butuh key?",
+                answer: "Beberapa script memerlukan key. Key bisa didapatkan di Discord atau dengan menekan tombol 'Show Keys'."
+            },
+            {
+                question: "Perbedaan Free vs VIP?",
+                answer: "Script VIP memiliki lebih banyak fitur, update lebih cepat, dan support prioritas."
+            },
+            {
+                question: "Report bug kemana?",
+                answer: "Laporkan bug di server Discord atau melalui Instagram."
+            }
+        ];
+
+        // Instagram admin URL
+        const adminInstagram = "https://www.instagram.com/snn2ndd_?igsh=czVyZzYxcmI0NW9l";
+
+        // DOM elements
+        const loadingScreen = document.getElementById('loading-screen');
+        const toast = document.getElementById('toast');
+        const menuBtn = document.getElementById('menu-btn');
+        const menu = document.getElementById('menu');
+        const scriptsContainer = document.querySelector('#scripts > .grid');
+        const partnersContainer = document.querySelector('.partners-container');
+        const socialsContainer = document.querySelector('#socials > .grid');
+        const faqContainer = document.querySelector('#faq > .glass');
+        const keysModal = document.getElementById('keys-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const keysContainer = document.getElementById('keys-container');
+        const closeModal = document.getElementById('close-modal');
+        const copyAllKeysBtn = document.getElementById('copy-all-keys');
+        
+        // DOM elements untuk VIP modal
+        const vipModal = document.getElementById('vip-modal');
+        const vipModalTitle = document.getElementById('vip-modal-title');
+        const vipScriptName = document.getElementById('vip-script-name');
+        const closeVipModal = document.getElementById('close-vip-modal');
+        const openInstagramApp = document.getElementById('open-instagram-app');
+        const openInstagramWeb = document.getElementById('open-instagram-web');
+        const copyInstagramUsername = document.getElementById('copy-instagram-username');
+        
+        // Variabel untuk menyimpan script title yang dipilih
+        let selectedScriptTitle = '';
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set current date and year
+            const currentDate = new Date();
+            document.getElementById('current-date').textContent = currentDate.toLocaleDateString();
+            document.getElementById('current-year').textContent = currentDate.getFullYear();
+            
+            // Render scripts
+            renderScripts();
+            
+            // Render partners
+            renderPartners();
+            
+            // Render socials
+            renderSocials();
+            
+            // Render FAQ
+            renderFAQ();
+            
+            // Initialize scroll animations
+            initScrollAnimations();
+            
+            // Smooth scroll for anchor links
+            initSmoothScroll();
+        });
+
+        // Remove loading screen when page is fully loaded
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                loadingScreen.style.opacity = '0';
+                setTimeout(function() {
+                    loadingScreen.remove();
+                }, 700);
+            }, 800);
+        });
+
+        // Mobile menu toggle
+        menuBtn.addEventListener('click', function() {
+            menuBtn.classList.toggle('open');
+            menu.classList.toggle('hidden');
+            document.body.style.overflow = menu.classList.contains('hidden') ? '' : 'hidden';
+        });
+
+        // Close mobile menu when clicking on links
+        document.querySelectorAll('#menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                menuBtn.classList.remove('open');
+                menu.classList.add('hidden');
+                document.body.style.overflow = '';
+            });
+        });
+
+        // Close modal when clicking outside
+        keysModal.addEventListener('click', function(e) {
+            if (e.target === keysModal) {
+                closeKeysModal();
+            }
+        });
+
+        // Close VIP modal when clicking outside
+        vipModal.addEventListener('click', function(e) {
+            if (e.target === vipModal) {
+                closeVipModalFunc();
+            }
+        });
+
+        // Close modal with escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                if (!keysModal.classList.contains('hidden')) {
+                    closeKeysModal();
+                }
+                if (!vipModal.classList.contains('hidden')) {
+                    closeVipModalFunc();
+                }
+            }
+        });
+
+        // Close modal button
+        closeModal.addEventListener('click', closeKeysModal);
+
+        // Copy all keys button
+        copyAllKeysBtn.addEventListener('click', function() {
+            const keys = Array.from(keysContainer.querySelectorAll('.key-item'))
+                .map(item => item.textContent.trim());
+            copyToClipboard(keys.join(', '));
+        });
+
+        // Event listener untuk VIP modal
+        closeVipModal.addEventListener('click', closeVipModalFunc);
+        
+        openInstagramApp.addEventListener('click', function() {
+            // Coba buka Instagram app
+            window.location.href = 'instagram://user?username=snn2ndd_';
+            
+            // Fallback ke web setelah delay
+            setTimeout(function() {
+                window.open('https://www.instagram.com/snn2ndd_', '_blank', 'noopener');
+            }, 500);
+            
+            closeVipModalFunc();
+        });
+        
+        openInstagramWeb.addEventListener('click', function() {
+            window.open('https://www.instagram.com/snn2ndd_', '_blank', 'noopener');
+            closeVipModalFunc();
+        });
+        
+        copyInstagramUsername.addEventListener('click', function() {
+            copyToClipboard('snn2ndd_');
+            closeVipModalFunc();
+        });
+
+        // Function to render scripts
+        function renderScripts() {
+            scriptsData.forEach(script => {
+                const scriptCard = document.createElement('div');
+                scriptCard.className = 'glass rounded-2xl p-6 hover:ring-2 hover:ring-rose-500/30 hover:scale-105 transition-all duration-300 fade-in';
+                
+                // Determine button content based on script status
+                let buttonContent = '';
+                if (script.status === 'VIP') {
+                    buttonContent = `
+                        <button class="get-vip-access glass px-4 py-2 rounded-xl text-sm hover:ring-1 hover:ring-rose-500/30 transition" data-title="${script.title}">
+                            Get VIP Access
+                        </button>
+                    `;
+                } else {
+                    buttonContent = `
+                        <a href="${script.downloadUrl}" target="_blank" class="download-script glass px-4 py-2 rounded-xl text-sm hover:ring-1 hover:ring-rose-500/30 transition block text-center">
+                            Download Script
+                        </a>
+                    `;
+                }
+                
+                scriptCard.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-xl font-bold">${script.title}</h3>
+                        <span class="px-3 py-1 rounded-full text-xs ${script.status === 'Free' ? 'bg-green-500/20 text-green-300' : 'bg-rose-500/20 text-rose-300'}">${script.status}</span>
+                    </div>
+                    <p class="text-gray-300 mb-4">Fast and reliable script for enhanced gameplay.</p>
+                    <div class="flex flex-col gap-2">
+                        ${buttonContent}
+                        <button class="show-keys bg-rose-500/20 px-4 py-2 rounded-xl text-sm hover:bg-rose-600/30 transition" data-keys='${JSON.stringify(script.keys)}' data-title="${script.title}">
+                            Show Keys
+                        </button>
+                    </div>
+                `;
+                scriptsContainer.appendChild(scriptCard);
+                
+                // Add event listeners to the buttons
+                if (script.status === 'VIP') {
+                    const vipBtn = scriptCard.querySelector('.get-vip-access');
+                    vipBtn.addEventListener('click', function() {
+                        contactAdminForVIP(this.dataset.title);
+                    });
+                }
+                
+                const keysBtn = scriptCard.querySelector('.show-keys');
+                keysBtn.addEventListener('click', function() {
+                    openKeysModal(this.dataset.title, JSON.parse(this.dataset.keys));
+                });
+            });
+        }
+
+        // Function to render partners
+        function renderPartners() {
+            partnersData.forEach(partner => {
+                const partnerCard = document.createElement('div');
+                partnerCard.className = 'glass rounded-2xl p-6 hover:ring-2 hover:ring-rose-500/30 transition fade-in';
+                partnerCard.innerHTML = `
+                    <div class="flex items-center mb-4">
+                        <i class="${partner.icon} text-2xl mr-3 text-rose-400"></i>
+                        <div>
+                            <h3 class="text-xl font-bold">${partner.name}</h3>
+                            <p class="text-gray-300 text-sm">${partner.username}</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm mb-4 truncate">${partner.url}</p>
+                    <div class="flex gap-2">
+                        <a href="${partner.url}" target="_blank" class="visit-link flex-1 glass px-4 py-2 rounded-xl text-sm hover:ring-1 hover:ring-rose-500/30 transition text-center">
+                            Visit Instagram
+                        </a>
+                        <button class="copy-url glass px-4 py-2 rounded-xl text-sm hover:ring-1 hover:ring-rose-500/30 transition" data-url="${partner.url}">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                `;
+                partnersContainer.appendChild(partnerCard);
+                
+                // Add event listener to the copy button
+                const copyBtn = partnerCard.querySelector('.copy-url');
+                copyBtn.addEventListener('click', function() {
+                    copyToClipboard(this.dataset.url);
+                });
+            });
+        }
+
+        // Function to render socials
+        function renderSocials() {
+            socialsData.forEach(social => {
+                const socialCard = document.createElement('div');
+                socialCard.className = 'glass rounded-2xl p-6 hover:ring-2 hover:ring-rose-500/30 transition fade-in';
+                socialCard.innerHTML = `
+                    <div class="flex items-center mb-4">
+                        <i class="${social.icon} text-2xl mr-3"></i>
+                        <h3 class="text-xl font-bold">${social.name}</h3>
+                    </div>
+                    <p class="text-gray-300 text-sm mb-4 truncate">${social.url}</p>
+                    <a href="${social.url}" target="_blank" class="visit-link w-full glass px-4 py-2 rounded-xl text-sm hover:ring-1 hover:ring-rose-500/30 transition block text-center">
+                        Visit Page
+                    </a>
+                `;
+                socialsContainer.appendChild(socialCard);
+            });
+        }
+
+        // Function to render FAQ
+        function renderFAQ() {
+            faqData.forEach((faq, index) => {
+                const faqItem = document.createElement('div');
+                faqItem.className = 'mb-4 last:mb-0';
+                faqItem.innerHTML = `
+                    <button class="accordion-btn w-full text-left py-4 px-4 glass rounded-xl hover:ring-2 hover:ring-rose-500/30 transition flex justify-between items-center" aria-expanded="false">
+                        <span class="font-bold">${faq.question}</span>
+                        <i class="fas fa-chevron-down transition-transform"></i>
+                    </button>
+                    <div class="accordion-content px-4 overflow-hidden max-h-0 transition-all">
+                        <div class="py-4 text-gray-300">${faq.answer}</div>
+                    </div>
+                `;
+                faqContainer.appendChild(faqItem);
+                
+                // Add event listener to the accordion button
+                const accordionBtn = faqItem.querySelector('.accordion-btn');
+                accordionBtn.addEventListener('click', function() {
+                    const expanded = this.getAttribute('aria-expanded') === 'true';
+                    this.setAttribute('aria-expanded', !expanded);
+                    
+                    const content = this.nextElementSibling;
+                    const icon = this.querySelector('i');
+                    
+                    if (expanded) {
+                        content.style.maxHeight = '0';
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                        icon.style.transform = 'rotate(180deg)';
+                    }
+                });
+            });
+        }
+
+        // Function to open keys modal
+        function openKeysModal(title, keys) {
+            modalTitle.textContent = `${title} Keys`;
+            keysContainer.innerHTML = '';
+            
+            keys.forEach(key => {
+                const keyElement = document.createElement('div');
+                keyElement.className = 'flex justify-between items-center glass p-3 rounded-xl mb-2';
+                keyElement.innerHTML = `
+                    <span class="key-item">${key}</span>
+                    <button class="copy-key px-3 py-1 rounded-lg text-sm hover:ring-1 hover:ring-rose-500/30 transition" data-key="${key}">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                `;
+                keysContainer.appendChild(keyElement);
+                
+                // Add event listener to the copy button
+                const copyBtn = keyElement.querySelector('.copy-key');
+                copyBtn.addEventListener('click', function() {
+                    copyToClipboard(this.dataset.key);
+                });
+            });
+            
+            keysModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Function to close keys modal
+        function closeKeysModal() {
+            keysModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+        
+        // Fungsi untuk menutup VIP modal
+        function closeVipModalFunc() {
+            vipModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        // Function to contact admin for VIP access
+        function contactAdminForVIP(scriptTitle) {
+            selectedScriptTitle = scriptTitle;
+            
+            // Update modal content
+            vipModalTitle.textContent = `VIP Access - ${scriptTitle}`;
+            vipScriptName.textContent = scriptTitle;
+            
+            // Show modal
+            vipModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Function to copy text to clipboard
+        function copyToClipboard(text) {
+            // Show loading state on the button if it exists
+            const activeButton = document.activeElement;
+            if (activeButton && (activeButton.classList.contains('copy-key') || 
+                                 activeButton.id === 'copy-all-keys' || 
+                                 activeButton.id === 'copy-instagram-username')) {
+                const originalText = activeButton.innerHTML;
+                activeButton.classList.add('btn-loading');
+                
+                setTimeout(() => {
+                    activeButton.classList.remove('btn-loading');
+                    activeButton.innerHTML = originalText;
+                }, 1000);
+            }
+            
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                showToast('Failed to copy!', true);
+                
+                // Fallback for older browsers
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                
+                // Avoid scrolling to bottom
+                textArea.style.top = "0";
+                textArea.style.left = "0";
+                textArea.style.position = "fixed";
+                
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                
+                try {
+                    const successful = document.execCommand('copy');
+                    if (successful) {
+                        showToast('Copied to clipboard!');
+                    }
+                } catch (err) {
+                    console.error('Fallback copy failed: ', err);
+                }
+                
+                document.body.removeChild(textArea);
+            });
+        }
+
+        // Function to show toast notification
+        function showToast(message, isError = false) {
+            toast.querySelector('span').textContent = message;
+            
+            if (isError) {
+                toast.classList.add('error');
+            } else {
+                toast.classList.remove('error');
+            }
+            
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        // Function to initialize scroll animations
+        function initScrollAnimations() {
+            const fadeElements = document.querySelectorAll('.fade-in');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+            
+            fadeElements.forEach(element => {
+                observer.observe(element);
+            });
+        }
+
+        // Function to initialize smooth scroll
+        function initSmoothScroll() {
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        // Close mobile menu if open
+                        if (!menu.classList.contains('hidden')) {
+                            menuBtn.classList.remove('open');
+                            menu.classList.add('hidden');
+                            document.body.style.overflow = '';
+                        }
+                        
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+</htm
