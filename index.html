@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -196,6 +196,20 @@
             }
         }
         
+        /* Code block styling */
+        .code-block {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Source Code Pro', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 10px;
+        }
+        
         /* Improved mobile styles */
         @media (max-width: 768px) {
             .glass {
@@ -205,6 +219,11 @@
             
             .hero-stats {
                 grid-template-columns: 1fr !important;
+            }
+            
+            .code-block {
+                font-size: 0.75rem;
+                padding: 8px;
             }
         }
     </style>
@@ -288,7 +307,7 @@
                     </div>
                     <div class="glass rounded-2xl p-6 text-center hover:ring-2 hover:ring-rose-500/30 transition">
                         <h3 class="text-2xl font-bold mb-2">Community</h3>
-                        <p class="text-xl">760+ Users</p>
+                        <p class="text-xl">1360+ Users</p>
                     </div>
                 </div>
             </div>
@@ -352,6 +371,30 @@
         </div>
     </div>
 
+    <!-- Loadstring Modal -->
+    <div id="loadstring-modal" class="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50 hidden">
+        <div class="glass rounded-3xl p-6 m-4 max-w-2xl w-full">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold" id="loadstring-modal-title">Script Loadstring</h3>
+                <button id="close-loadstring-modal" class="text-2xl hover:text-rose-400 transition" aria-label="Close modal">&times;</button>
+            </div>
+            <div class="mb-4">
+                <p class="text-gray-300 mb-4">Copy the code below and paste it into your Roblox executor:</p>
+                <div class="code-block" id="loadstring-code">
+                    <!-- Loadstring code will be inserted here -->
+                </div>
+            </div>
+            <div class="flex gap-3">
+                <button id="copy-loadstring" class="flex-1 bg-rose-500 py-3 rounded-2xl hover:bg-rose-600 transition flex items-center justify-center gap-2">
+                    <i class="fas fa-copy"></i> Copy Loadstring
+                </button>
+                <button id="close-loadstring" class="glass px-6 py-3 rounded-2xl hover:ring-2 hover:ring-rose-500/30 transition">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- VIP Modal -->
     <div id="vip-modal" class="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50 hidden">
         <div class="vip-modal-content">
@@ -391,7 +434,25 @@
                 title: "Script All Mount",
                 downloadUrl: 'https://safefileku.com/download/p3CXPyJi2HZtPjUZ',
                 keys: ["ig: @snn2ndd_"],
-                status: "Free"
+                status: "Free",
+                loadstring: `_G["Setting"] = {
+    ["Tittle Exs"] = true, -- ubah jadi false, kalo gamau pake title
+    ["Main Script"] = true, -- jangan diubah kalo biar muncul guinya
+}
+
+if _G["Setting"] then
+    if _G["Setting"]["Tittle Exs"] then
+        loadstring(game:HttpGet("https://paste.monster/ClpL5ybvEf3c/raw/"))()
+    else
+        print("Title execution is disabled in settings")
+    end
+    
+    if _G["Setting"]["Main Script"] then
+        loadstring(game:HttpGet("https://paste.monster/uYKDsVOfXW7L/raw/"))()
+    else
+        print("Main script execution is disabled in settings")
+    end
+end`
             }, 
             {
                 title: "Script Fly",
@@ -480,6 +541,14 @@
         const closeModal = document.getElementById('close-modal');
         const copyAllKeysBtn = document.getElementById('copy-all-keys');
         
+        // DOM elements untuk Loadstring modal
+        const loadstringModal = document.getElementById('loadstring-modal');
+        const loadstringModalTitle = document.getElementById('loadstring-modal-title');
+        const loadstringCode = document.getElementById('loadstring-code');
+        const closeLoadstringModal = document.getElementById('close-loadstring-modal');
+        const copyLoadstringBtn = document.getElementById('copy-loadstring');
+        const closeLoadstringBtn = document.getElementById('close-loadstring');
+        
         // DOM elements untuk VIP modal
         const vipModal = document.getElementById('vip-modal');
         const vipModalTitle = document.getElementById('vip-modal-title');
@@ -551,6 +620,13 @@
             }
         });
 
+        // Close Loadstring modal when clicking outside
+        loadstringModal.addEventListener('click', function(e) {
+            if (e.target === loadstringModal) {
+                closeLoadstringModalFunc();
+            }
+        });
+
         // Close VIP modal when clicking outside
         vipModal.addEventListener('click', function(e) {
             if (e.target === vipModal) {
@@ -563,6 +639,9 @@
             if (e.key === 'Escape') {
                 if (!keysModal.classList.contains('hidden')) {
                     closeKeysModal();
+                }
+                if (!loadstringModal.classList.contains('hidden')) {
+                    closeLoadstringModalFunc();
                 }
                 if (!vipModal.classList.contains('hidden')) {
                     closeVipModalFunc();
@@ -578,6 +657,13 @@
             const keys = Array.from(keysContainer.querySelectorAll('.key-item'))
                 .map(item => item.textContent.trim());
             copyToClipboard(keys.join(', '));
+        });
+
+        // Event listener untuk Loadstring modal
+        closeLoadstringModal.addEventListener('click', closeLoadstringModalFunc);
+        closeLoadstringBtn.addEventListener('click', closeLoadstringModalFunc);
+        copyLoadstringBtn.addEventListener('click', function() {
+            copyToClipboard(loadstringCode.textContent);
         });
 
         // Event listener untuk VIP modal
@@ -620,11 +706,20 @@
                         </button>
                     `;
                 } else {
-                    buttonContent = `
-                        <a href="${script.downloadUrl}" target="_blank" class="download-script glass px-4 py-2 rounded-xl text-sm hover:ring-1 hover:ring-rose-500/30 transition block text-center">
-                            Download Script
-                        </a>
-                    `;
+                    // Check if script has loadstring property
+                    if (script.loadstring) {
+                        buttonContent = `
+                            <button class="show-loadstring glass px-4 py-2 rounded-xl text-sm hover:ring-1 hover:ring-rose-500/30 transition" data-title="${script.title}" data-loadstring="${encodeURIComponent(script.loadstring)}">
+                                Show Loadstring
+                            </button>
+                        `;
+                    } else {
+                        buttonContent = `
+                            <a href="${script.downloadUrl}" target="_blank" class="download-script glass px-4 py-2 rounded-xl text-sm hover:ring-1 hover:ring-rose-500/30 transition block text-center">
+                                Download Script
+                            </a>
+                        `;
+                    }
                 }
                 
                 scriptCard.innerHTML = `
@@ -647,6 +742,11 @@
                     const vipBtn = scriptCard.querySelector('.get-vip-access');
                     vipBtn.addEventListener('click', function() {
                         contactAdminForVIP(this.dataset.title);
+                    });
+                } else if (script.loadstring) {
+                    const loadstringBtn = scriptCard.querySelector('.show-loadstring');
+                    loadstringBtn.addEventListener('click', function() {
+                        openLoadstringModal(this.dataset.title, decodeURIComponent(this.dataset.loadstring));
                     });
                 }
                 
@@ -778,6 +878,21 @@
             document.body.style.overflow = '';
         }
         
+        // Function to open loadstring modal
+        function openLoadstringModal(title, loadstring) {
+            loadstringModalTitle.textContent = `${title} Loadstring`;
+            loadstringCode.textContent = loadstring;
+            
+            loadstringModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // Fungsi untuk menutup Loadstring modal
+        function closeLoadstringModalFunc() {
+            loadstringModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+        
         // Fungsi untuk menutup VIP modal
         function closeVipModalFunc() {
             vipModal.classList.add('hidden');
@@ -803,7 +918,8 @@
             const activeButton = document.activeElement;
             if (activeButton && (activeButton.classList.contains('copy-key') || 
                                  activeButton.id === 'copy-all-keys' || 
-                                 activeButton.id === 'copy-instagram-username')) {
+                                 activeButton.id === 'copy-instagram-username' ||
+                                 activeButton.id === 'copy-loadstring')) {
                 const originalText = activeButton.innerHTML;
                 activeButton.classList.add('btn-loading');
                 
@@ -909,4 +1025,4 @@
         }
     </script>
 </body>
-</htm
+</html>
